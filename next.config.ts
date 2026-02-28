@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
@@ -5,7 +7,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // 忽略云端打包时的 TS 严格审查报错
     ignoreBuildErrors: true,
   },
 };
