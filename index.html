@@ -18,10 +18,10 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- 顶部导航栏 (移动端优化版) --- */
+        /* --- 导航栏：极致居中适配 --- */
         nav {
             width: 100%; padding: 40px 0; display: flex; justify-content: center; 
-            gap: 50px; position: absolute; top: 0; z-index: 100; box-sizing: border-box;
+            gap: 40px; position: absolute; top: 0; z-index: 100; box-sizing: border-box;
         }
         nav a {
             color: var(--nav-text); text-decoration: none; font-size: 15px; font-weight: 400;
@@ -32,13 +32,11 @@
         /* --- 主视觉区域 --- */
         main { position: relative; width: 100vw; height: 100vh; background: #000; }
 
-        /* 纯动态光效层 */
         canvas { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
         }
 
-        /* DOM 字体遮罩层 */
         .text-mask-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
             display: flex; justify-content: center; align-items: center;
@@ -58,7 +56,7 @@
         }
         .article-list { width: 100%; max-width: 680px; padding: 0 20px 100px 20px; box-sizing: border-box; }
         
-        /* 极致极简卡片 */
+        /* 文章卡片：方案一优雅跳转样式 */
         .article-card {
             display: block; text-decoration: none; padding: 25px; margin-bottom: 16px;
             background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.05);
@@ -70,26 +68,25 @@
             transform: translateY(-2px);
         }
         .article-title { color: #f5f5f7; font-size: 19px; font-weight: 600; margin: 0 0 10px 0; }
-        .article-meta { color: #666; font-size: 13px; }
+        .article-meta { color: #555; font-size: 13px; display: flex; justify-content: space-between; }
+        .article-card::after {
+            content: "阅读全文 →"; display: block; margin-top: 12px; font-size: 12px; color: #444; transition: color 0.3s;
+        }
+        .article-card:hover::after { color: #aaa; }
 
-        /* --- 核心状态切换：点开后纯黑背景 --- */
-        body.module-active canvas { opacity: 0; } /* 彩虹光效彻底隐藏 */
+        /* --- 核心切换态：内容打开时背景彻底黑掉 --- */
+        body.module-active canvas { opacity: 0; } 
         body.module-active .text-mask-container { opacity: 0; } 
         body.module-active #content-layer { opacity: 1; pointer-events: auto; }
         body.module-active .article-card { transform: translateY(0); }
 
-        /* 加载与无内容提示 */
         .loading-text { color: #444; margin-top: 60px; font-size: 14px; letter-spacing: 1px; text-align: center; }
 
         /* --- 手机端适配修复 --- */
         @media (max-width: 768px) {
-            nav { 
-                gap: 20px; /* 缩小间距防止溢出 */
-                padding: 30px 15px; 
-                justify-content: center; /* 确保居中 */
-            }
-            nav a { font-size: 14px; }
-            #content-layer { top: 100px; height: calc(100vh - 100px); }
+            nav { gap: 15px; padding: 30px 10px; }
+            nav a { font-size: 13px; letter-spacing: 0; }
+            #content-layer { top: 90px; height: calc(100vh - 90px); }
             .article-card { padding: 20px; }
         }
     </style>
@@ -105,23 +102,22 @@
 
     <main>
         <canvas id="canvas-lines"></canvas>
-        <div class="text-mask-container" id="hero-text">
-            <h1>hi, i'm yanzisheng</h1>
-        </div>
+        <div class="text-mask-container"><h1>hi, i'm yanzisheng</h1></div>
     </main>
 
     <div id="content-layer">
         <div id="module-about" class="article-list" style="display: none;">
-             <div class="article-card">
+             <div class="article-card" style="cursor: default; pointer-events: none;">
                 <h3 class="article-title">Zisheng Yan</h3>
-                <p style="color:#888; line-height:1.8; font-size:15px;">此博客用于记录成长过程中的思考,导航栏分为认知脑科学,骑行和投资.认知脑科学板块主要记录读心理学,社会学,哲学产生的思考.骑行板块记录骑行过程中实践而来的思想,相较于读书产生的思想,这类思想是符号落地的,真实的,我把它称为"感觉".投资板块来历很有意思,我本来对金融没啥兴趣,从2024年10.31日a股开户,账户亏钱倒逼我不得不去学习金融,刚开始是研究k线图,k线图看不懂,就看价值投资,到现在刚刚对债务有了解,债务更贴近现实,让我对金融的兴趣进一步加深.</p>
+                <p style="color:#888; line-height:1.8; font-size:15px; margin:0;">
+                    此博客用于记录成长过程中的思考。导航栏分为认知脑科学、骑行和投资。认知脑科学板块主要记录读心理学、社会学、哲学产生的思考。骑行板块记录骑行过程中实践而来的思想，相较于读书产生的思想，这类思想是符号落地的、真实的，我把它称为"感觉"。投资板块来历很有意思，我本来对金融没啥兴趣，从2024年10.31日A股开户，账户亏钱倒逼我不得不去学习金融，刚开始是研究K线图，K线图看不懂，就看价值投资，到现在刚刚对债务有了解，债务更贴近现实，让我对金融的兴趣进一步加深。
+                </p>
              </div>
         </div>
         <div id="article-container" class="article-list" style="display: none;"></div>
     </div>
 
     <script>
-        // --- 1. 数据配置 (保持你的 Vercel API 链接) ---
         const API_URL = 'https://zazenyan-github-io-q1gd.vercel.app/api/notion'; 
 
         async function routeTo(moduleName) {
@@ -130,7 +126,6 @@
             const container = document.getElementById('article-container');
             const about = document.getElementById('module-about');
 
-            // 如果点击已激活项，退回主页
             if (document.getElementById(`nav-${moduleName}`).classList.contains('active')) {
                 body.classList.remove('module-active');
                 navItems.forEach(a => a.classList.remove('active'));
@@ -151,7 +146,7 @@
 
         async function loadNotionData(moduleKey) {
             const container = document.getElementById('article-container');
-            container.innerHTML = '<div class="loading-text">SYNCING NOTION DATA...</div>';
+            container.innerHTML = '<div class="loading-text">SYNCING NOTION...</div>';
 
             const categoryMap = { 'cognition': '认知', 'cycling': '骑行', 'investment': '投资' };
             const targetCategory = categoryMap[moduleKey];
@@ -160,18 +155,24 @@
                 const res = await fetch(API_URL);
                 const data = await res.json();
                 
-                // 这里使用的是你改回来的 Name 字段
-                const articles = data.results.map(page => ({
-                    title: page.properties.Name.title[0]?.plain_text || '未命名文章',
-                    date: page.properties.Date?.date?.start || '',
-                    category: page.properties.Category?.select?.name || '',
-                    url: `https://www.notion.so/${page.id.replace(/-/g, '')}`
-                }));
+                const articles = data.results.map(page => {
+                    // 兼容 Notion 不同的属性设置方式
+                    const rawCategory = page.properties.Category?.select?.name || 
+                                       page.properties.Category?.rich_text[0]?.plain_text || '';
+                    
+                    return {
+                        title: (page.properties.Name.title[0]?.plain_text || '未命名文章').trim(),
+                        date: page.properties.Date?.date?.start || '2026-xx-xx',
+                        category: rawCategory.trim(),
+                        // 强制给 Notion 链接加上深色模式参数 (?pvs=4)
+                        url: `https://www.notion.so/${page.id.replace(/-/g, '')}?pvs=4`
+                    };
+                });
 
                 const filtered = articles.filter(a => a.category === targetCategory);
 
                 if (filtered.length === 0) {
-                    container.innerHTML = `<div class="loading-text">还没有在 Notion 的“${targetCategory}”分类下发布文章</div>`;
+                    container.innerHTML = `<div class="loading-text">"${targetCategory}" 目录下暂无内容</div>`;
                     return;
                 }
 
@@ -183,18 +184,18 @@
                 `).join('');
 
             } catch (err) {
-                container.innerHTML = `<div class="loading-text">CONNECTION ERROR: ${err.message}</div>`;
+                container.innerHTML = `<div class="loading-text">CONNECTION FAILED: ${err.message}</div>`;
             }
         }
 
-        // --- 2. Canvas 渲染引擎 (保持你的 4px 线宽与霓虹色) ---
+        // --- Canvas 背景逻辑 ---
         const canvas = document.getElementById('canvas-lines');
         const ctx = canvas.getContext('2d');
-        let w, h, dpr = window.devicePixelRatio || 1;
+        let w, h;
         const colors = ["#FF006E", "#8338EC", "#00F5D4", "#FFBE0B"];
         
         function resize() {
-            dpr = window.devicePixelRatio || 1;
+            const dpr = window.devicePixelRatio || 1;
             w = window.innerWidth; h = window.innerHeight;
             canvas.width = w * dpr; canvas.height = h * dpr;
             canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
