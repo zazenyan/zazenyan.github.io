@@ -18,7 +18,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- 顶部导航栏 --- */
+        /* --- 导航栏 --- */
         nav {
             width: 100%; padding: 40px 0; display: flex; justify-content: center; gap: 50px;
             position: absolute; top: 0; z-index: 100;
@@ -29,18 +29,9 @@
         }
         nav a:hover, nav a.active { color: var(--nav-hover); }
 
-        /* --- 主视觉区域 --- */
-        main {
-            position: relative; width: 100vw; height: 100vh; background: #000;
-        }
-
-        /* 纯动态光效层 */
-        canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-            transition: opacity 0.5s ease; /* 状态切换过渡 */
-        }
-
-        /* DOM 字体遮罩层 (首页中心文字) */
+        /* --- 主视觉 --- */
+        main { position: relative; width: 100vw; height: 100vh; background: #000; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; transition: opacity 0.5s ease; }
         .text-mask-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
             display: flex; justify-content: center; align-items: center;
@@ -52,50 +43,33 @@
             text-wrap: balance; font-size: clamp(2rem, 7vw, 5rem); 
         }
 
-        /* --- 内容展示层 (用于承载各个板块的具体内容) --- */
+        /* --- 内容层 --- */
         #content-layer {
             position: absolute; top: 120px; left: 0; width: 100%; height: calc(100vh - 120px);
             z-index: 50; display: flex; flex-direction: column; align-items: center;
             opacity: 0; pointer-events: none; transition: opacity 0.5s ease; overflow-y: auto;
         }
-
-        /* 极简文章列表 UI */
-        .article-list {
-            width: 100%; max-width: 680px; padding: 0 20px 100px 20px; box-sizing: border-box;
-        }
+        .article-list { width: 100%; max-width: 680px; padding: 0 20px 100px 20px; box-sizing: border-box; }
+        
+        /* 文章卡片样式 */
         .article-card {
             display: block; text-decoration: none; padding: 30px; margin-bottom: 20px;
             background: rgba(15, 15, 15, 0.6); border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px; backdrop-filter: blur(10px);
             transform: translateY(20px); transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            cursor: pointer;
         }
-        .article-card:hover {
-            background: rgba(25, 25, 25, 0.8); border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(18px);
-        }
-        .article-title {
-            color: #f5f5f7; font-size: 20px; font-weight: 600; margin: 0 0 12px 0; letter-spacing: 0.5px;
-        }
-        .article-meta {
-            display: flex; gap: 15px; color: #888; font-size: 13px; font-weight: 300;
-        }
-        .article-tags span {
-            background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: 4px; color: #aaa;
-        }
+        .article-card:hover { background: rgba(25, 25, 25, 0.8); border-color: rgba(255, 255, 255, 0.15); }
+        .article-title { color: #f5f5f7; font-size: 20px; font-weight: 600; margin: 0 0 12px 0; }
+        .article-meta { color: #666; font-size: 13px; }
 
-        /* --- 状态控制类 --- */
-        body.module-active canvas { opacity: 0.15; } /* 点击导航后，背景光效变暗 */
-        body.module-active .text-mask-container { opacity: 0; } /* 隐藏主页文字 */
-        body.module-active #content-layer { opacity: 1; pointer-events: auto; } /* 显示内容层 */
-        body.module-active .article-card { transform: translateY(0); } /* 卡片浮现动画 */
+        /* 状态控制 */
+        body.module-active canvas { opacity: 0.15; }
+        body.module-active .text-mask-container { opacity: 0; }
+        body.module-active #content-layer { opacity: 1; pointer-events: auto; }
+        body.module-active .article-card { transform: translateY(0); }
 
-        @media (max-width: 768px) {
-            nav { gap: 20px; padding: 30px 0; }
-            nav a { font-size: 14px; }
-            .article-card { padding: 20px; }
-            .article-title { font-size: 18px; }
-        }
+        /* 加载动画 */
+        .loading-text { color: #444; margin-top: 40px; font-size: 14px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -109,83 +83,105 @@
 
     <main>
         <canvas id="canvas-lines"></canvas>
-        <div class="text-mask-container" id="hero-text">
-            <h1>hi, i'm yanzisheng</h1>
-        </div>
+        <div class="text-mask-container"><h1>hi, i'm yanzisheng</h1></div>
     </main>
 
     <div id="content-layer">
-        
-        <div id="module-cognition" class="article-list" style="display: none;">
-            
-            <a href="#" class="article-card">
-                <h3 class="article-title">哥德尔、埃舍尔、巴赫：系统论视角的认知回环</h3>
-                <div class="article-meta">
-                    <span>2026-03-10</span>
-                    <div class="article-tags"><span>系统论</span><span>自指</span></div>
-                </div>
-            </a>
-
-            <a href="#" class="article-card">
-                <h3 class="article-title">注意力机制的系统性崩溃：从《被剥夺的注意力》谈起</h3>
-                <div class="article-meta">
-                    <span>2026-02-18</span>
-                    <div class="article-tags"><span>认知科学</span><span>深度工作</span></div>
-                </div>
-            </a>
-
-            <a href="#" class="article-card">
-                <h3 class="article-title">浅薄化时代的深度认知构建：互联网如何重塑大脑结构</h3>
-                <div class="article-meta">
-                    <span>2025-12-05</span>
-                    <div class="article-tags"><span>脑科学</span><span>斯多葛</span></div>
-                </div>
-            </a>
-
+        <div id="module-about" class="article-list" style="display: none;">
+             <div class="article-card">
+                <h3 class="article-title">Zisheng Yan</h3>
+                <p style="color:#888; line-height:1.8;">系统论与斯多葛哲学践行者。追求极简、客观与硬核的野蛮生长。</p>
+             </div>
         </div>
-        
-        <div id="module-about" class="article-list" style="display: none; text-align:center; color:#888;">关于我的内容将在这里渲染...</div>
-        <div id="module-cycling" class="article-list" style="display: none; text-align:center; color:#888;">日韩长途骑行路书将在这里渲染...</div>
-        <div id="module-investment" class="article-list" style="display: none; text-align:center; color:#888;">宏观周期与量化分析将在这里渲染...</div>
-
+        <div id="article-container" class="article-list" style="display: none;">
+            </div>
     </div>
 
     <script>
-        // --- 1. 极简前端路由引擎 ---
-        function routeTo(moduleName) {
-            const body = document.body;
-            const currentNav = document.getElementById(`nav-${moduleName}`);
+        // --- 1. 数据配置 ---
+        // 指向你刚部署成功的 Vercel API
+        const API_URL = 'https://zazenyan-github-io-q1gd.vercel.app/api/notion'; 
+        let allArticles = [];
 
-            // 如果点击的是已经激活的模块，则返回主页状态
-            if (currentNav.classList.contains('active')) {
+        // --- 2. 路由逻辑 ---
+        async function routeTo(moduleName) {
+            const body = document.body;
+            const navItems = document.querySelectorAll('nav a');
+            const container = document.getElementById('article-container');
+            const about = document.getElementById('module-about');
+
+            // 返回主页
+            if (document.getElementById(`nav-${moduleName}`).classList.contains('active')) {
                 body.classList.remove('module-active');
-                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-                setTimeout(() => {
-                    document.querySelectorAll('.article-list').forEach(m => m.style.display = 'none');
-                }, 500); // 等待淡出动画结束
+                navItems.forEach(a => a.classList.remove('active'));
                 return;
             }
 
-            // 切换导航高亮
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-            currentNav.classList.add('active');
+            navItems.forEach(a => a.classList.remove('active'));
+            document.getElementById(`nav-${moduleName}`).classList.add('active');
+            
+            // 显示/隐藏 模块
+            about.style.display = (moduleName === 'about') ? 'block' : 'none';
+            container.style.display = (moduleName === 'about') ? 'none' : 'block';
 
-            // 隐藏所有模块，显示目标模块
-            document.querySelectorAll('.article-list').forEach(m => m.style.display = 'none');
-            document.getElementById(`module-${moduleName}`).style.display = 'block';
+            if (moduleName !== 'about') {
+                await loadNotionData(moduleName);
+            }
 
-            // 触发进入内容的 UI 动画
             body.classList.add('module-active');
         }
 
-        // --- 2. Canvas 渲染引擎 (维持你的 4px 线宽与霓虹色) ---
+        // --- 3. 数据抓取与渲染 ---
+        async function loadNotionData(categoryMap) {
+            const container = document.getElementById('article-container');
+            container.innerHTML = '<div class="loading-text">正在同步 Notion 数据中心...</div>';
+
+            // 映射中文分类
+            const categoryName = {
+                'cognition': '认知',
+                'cycling': '骑行',
+                'investment': '投资'
+            }[categoryMap];
+
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                
+                // 解析 Notion 数据结构
+                const articles = data.results.map(page => ({
+                    title: page.properties.Name.title[0]?.plain_text || '未命名文章',
+                    date: page.properties.Date?.date?.start || '',
+                    category: page.properties.Category?.select?.name || '',
+                    url: `https://www.notion.so/${page.id.replace(/-/g, '')}`
+                }));
+
+                // 过滤分类
+                const filtered = articles.filter(a => a.category === categoryName);
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `<div class="loading-text">还没有在 Notion 的“${categoryName}”分类下发布文章</div>`;
+                    return;
+                }
+
+                // 渲染 HTML
+                container.innerHTML = filtered.map(a => `
+                    <a href="${a.url}" target="_blank" class="article-card">
+                        <h3 class="article-title">${a.title}</h3>
+                        <div class="article-meta"><span>${a.date}</span></div>
+                    </a>
+                `).join('');
+
+            } catch (err) {
+                container.innerHTML = `<div class="loading-text">数据链接中断: ${err.message}</div>`;
+            }
+        }
+
+        // --- 4. Canvas 物理引擎 ---
         const canvas = document.getElementById('canvas-lines');
         const ctx = canvas.getContext('2d');
-        let w, h; let dpr = window.devicePixelRatio || 1;
-
+        let w, h, dpr = window.devicePixelRatio || 1;
         const colors = ["#FF006E", "#8338EC", "#00F5D4", "#FFBE0B"];
-        const animationDuration = 20; const lineGap = 4; const curveIntensity = 60; const lineWidth = 4;
-
+        
         function resize() {
             dpr = window.devicePixelRatio || 1;
             w = window.innerWidth; h = window.innerHeight;
@@ -199,22 +195,15 @@
         function render(currentTime) {
             if (!startTime) startTime = currentTime;
             const elapsed = (currentTime - startTime) / 1000;
-            const phase = (elapsed / animationDuration) * Math.PI * 2;
-
-            ctx.fillStyle = '#050505'; 
-            ctx.fillRect(0, 0, w, h);
-
-            const numLines = Math.floor(h / lineGap) + 10;
-            for (let i = 0; i < numLines; i++) {
-                const y = i * lineGap;
-                const curve1 = Math.sin(phase) * curveIntensity;
-                const curve2 = Math.sin(phase + 0.5) * curveIntensity * 0.6;
-
+            const phase = (elapsed / 20) * Math.PI * 2;
+            ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, w, h);
+            for (let i = 0; i < Math.floor(h / 4) + 10; i++) {
+                const y = i * 4;
                 ctx.strokeStyle = colors[i % colors.length];
-                ctx.lineWidth = lineWidth;
+                ctx.lineWidth = 4;
                 ctx.beginPath();
                 ctx.moveTo(0, y);
-                ctx.bezierCurveTo(w * 0.33, y + curve1, w * 0.66, y + curve2, w, y);
+                ctx.bezierCurveTo(w*0.33, y + Math.sin(phase)*60, w*0.66, y + Math.sin(phase+0.5)*36, w, y);
                 ctx.stroke();
             }
             requestAnimationFrame(render);
