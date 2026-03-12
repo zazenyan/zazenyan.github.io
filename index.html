@@ -3,191 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>yzs</title>
+    <title>Yanzisheng</title>
     <style>
         :root {
             --bg-color: #000000;
             --nav-text: #888888;
             --nav-hover: #ffffff;
-            --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+            --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            font-family: var(--apple-font);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            margin: 0; padding: 0; background-color: var(--bg-color);
+            font-family: var(--apple-font); height: 100vh; overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- 顶部导航栏 (关于我在最左，整体居中) --- */
+        /* --- 顶部导航栏 --- */
         nav {
-            width: 100%;
-            padding: 40px 0;
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            position: absolute;
-            top: 0;
-            z-index: 100;
+            width: 100%; padding: 40px 0; display: flex; justify-content: center; gap: 50px;
+            position: absolute; top: 0; z-index: 100;
         }
-
         nav a {
-            color: var(--nav-text);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 400;
-            letter-spacing: 1px;
-            transition: color 0.3s ease;
+            color: var(--nav-text); text-decoration: none; font-size: 15px; font-weight: 400;
+            letter-spacing: 1px; transition: color 0.3s ease; cursor: pointer;
         }
-
-        nav a:hover {
-            color: var(--nav-hover);
-        }
+        nav a:hover, nav a.active { color: var(--nav-hover); }
 
         /* --- 主视觉区域 --- */
         main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            width: 100vw;
-            height: 100vh;
+            position: relative; width: 100vw; height: 100vh; background: #000;
         }
 
-        /* 全屏 Canvas 容器 */
+        /* 纯动态光效层 */
         canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            transition: opacity 0.5s ease; /* 状态切换过渡 */
         }
+
+        /* DOM 字体遮罩层 (首页中心文字) */
+        .text-mask-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
+            display: flex; justify-content: center; align-items: center;
+            background-color: #000; color: #fff; mix-blend-mode: multiply; pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .text-mask-container h1 {
+            margin: 0; text-align: center; font-weight: 700; letter-spacing: -0.025em; 
+            text-wrap: balance; font-size: clamp(2rem, 7vw, 5rem); 
+        }
+
+        /* --- 内容展示层 (用于承载各个板块的具体内容) --- */
+        #content-layer {
+            position: absolute; top: 120px; left: 0; width: 100%; height: calc(100vh - 120px);
+            z-index: 50; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease; overflow-y: auto;
+        }
+
+        /* 极简文章列表 UI */
+        .article-list {
+            width: 100%; max-width: 680px; padding: 0 20px 100px 20px; box-sizing: border-box;
+        }
+        .article-card {
+            display: block; text-decoration: none; padding: 30px; margin-bottom: 20px;
+            background: rgba(15, 15, 15, 0.6); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px; backdrop-filter: blur(10px);
+            transform: translateY(20px); transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: pointer;
+        }
+        .article-card:hover {
+            background: rgba(25, 25, 25, 0.8); border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(18px);
+        }
+        .article-title {
+            color: #f5f5f7; font-size: 20px; font-weight: 600; margin: 0 0 12px 0; letter-spacing: 0.5px;
+        }
+        .article-meta {
+            display: flex; gap: 15px; color: #888; font-size: 13px; font-weight: 300;
+        }
+        .article-tags span {
+            background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: 4px; color: #aaa;
+        }
+
+        /* --- 状态控制类 --- */
+        body.module-active canvas { opacity: 0.15; } /* 点击导航后，背景光效变暗 */
+        body.module-active .text-mask-container { opacity: 0; } /* 隐藏主页文字 */
+        body.module-active #content-layer { opacity: 1; pointer-events: auto; } /* 显示内容层 */
+        body.module-active .article-card { transform: translateY(0); } /* 卡片浮现动画 */
 
         @media (max-width: 768px) {
-            nav {
-                gap: 20px;
-                padding: 30px 0;
-            }
-            nav a {
-                font-size: 14px;
-            }
+            nav { gap: 20px; padding: 30px 0; }
+            nav a { font-size: 14px; }
+            .article-card { padding: 20px; }
+            .article-title { font-size: 18px; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <a href="#about">关于我</a>
-        <a href="#cognition">认知脑科学</a>
-        <a href="#cycling">骑行</a>
-        <a href="#investment">投资</a>
+        <a onclick="routeTo('about')" id="nav-about">关于我</a>
+        <a onclick="routeTo('cognition')" id="nav-cognition">认知脑科学</a>
+        <a onclick="routeTo('cycling')" id="nav-cycling">骑行</a>
+        <a onclick="routeTo('investment')" id="nav-investment">投资</a>
     </nav>
 
     <main>
-        <canvas id="canvas-text"></canvas>
+        <canvas id="canvas-lines"></canvas>
+        <div class="text-mask-container" id="hero-text">
+            <h1>hi, i'm yanzisheng</h1>
+        </div>
     </main>
 
-    <script>
-        const canvas = document.getElementById('canvas-text');
-        const ctx = canvas.getContext('2d');
-        let w, h;
-        let dpr = window.devicePixelRatio || 1;
+    <div id="content-layer">
+        
+        <div id="module-cognition" class="article-list" style="display: none;">
+            
+            <a href="#" class="article-card">
+                <h3 class="article-title">哥德尔、埃舍尔、巴赫：系统论视角的认知回环</h3>
+                <div class="article-meta">
+                    <span>2026-03-10</span>
+                    <div class="article-tags"><span>系统论</span><span>自指</span></div>
+                </div>
+            </a>
 
-        // 提取自你提供的源码参数
-        const colors = [
-            "rgba(0, 153, 255, 1)",
-            "rgba(0, 153, 255, 0.9)",
-            "rgba(0, 153, 255, 0.8)",
-            "rgba(0, 153, 255, 0.7)",
-            "rgba(0, 153, 255, 0.6)",
-            "rgba(0, 153, 255, 0.5)",
-            "rgba(0, 153, 255, 0.4)",
-            "rgba(0, 153, 255, 0.3)",
-            "rgba(0, 153, 255, 0.2)",
-            "rgba(0, 153, 255, 0.1)"
-        ];
-        const animationDuration = 20;
-        const lineGap = 4;
-        const curveIntensity = 60;
-        const lineWidth = 1.5;
+            <a href="#" class="article-card">
+                <h3 class="article-title">注意力机制的系统性崩溃：从《被剥夺的注意力》谈起</h3>
+                <div class="article-meta">
+                    <span>2026-02-18</span>
+                    <div class="article-tags"><span>认知科学</span><span>深度工作</span></div>
+                </div>
+            </a>
+
+            <a href="#" class="article-card">
+                <h3 class="article-title">浅薄化时代的深度认知构建：互联网如何重塑大脑结构</h3>
+                <div class="article-meta">
+                    <span>2025-12-05</span>
+                    <div class="article-tags"><span>脑科学</span><span>斯多葛</span></div>
+                </div>
+            </a>
+
+        </div>
+        
+        <div id="module-about" class="article-list" style="display: none; text-align:center; color:#888;">关于我的内容将在这里渲染...</div>
+        <div id="module-cycling" class="article-list" style="display: none; text-align:center; color:#888;">日韩长途骑行路书将在这里渲染...</div>
+        <div id="module-investment" class="article-list" style="display: none; text-align:center; color:#888;">宏观周期与量化分析将在这里渲染...</div>
+
+    </div>
+
+    <script>
+        // --- 1. 极简前端路由引擎 ---
+        function routeTo(moduleName) {
+            const body = document.body;
+            const currentNav = document.getElementById(`nav-${moduleName}`);
+
+            // 如果点击的是已经激活的模块，则返回主页状态
+            if (currentNav.classList.contains('active')) {
+                body.classList.remove('module-active');
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                setTimeout(() => {
+                    document.querySelectorAll('.article-list').forEach(m => m.style.display = 'none');
+                }, 500); // 等待淡出动画结束
+                return;
+            }
+
+            // 切换导航高亮
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            currentNav.classList.add('active');
+
+            // 隐藏所有模块，显示目标模块
+            document.querySelectorAll('.article-list').forEach(m => m.style.display = 'none');
+            document.getElementById(`module-${moduleName}`).style.display = 'block';
+
+            // 触发进入内容的 UI 动画
+            body.classList.add('module-active');
+        }
+
+        // --- 2. Canvas 渲染引擎 (维持你的 4px 线宽与霓虹色) ---
+        const canvas = document.getElementById('canvas-lines');
+        const ctx = canvas.getContext('2d');
+        let w, h; let dpr = window.devicePixelRatio || 1;
+
+        const colors = ["#FF006E", "#8338EC", "#00F5D4", "#FFBE0B"];
+        const animationDuration = 20; const lineGap = 4; const curveIntensity = 60; const lineWidth = 4;
 
         function resize() {
             dpr = window.devicePixelRatio || 1;
-            w = window.innerWidth;
-            h = window.innerHeight;
-            canvas.width = w * dpr;
-            canvas.height = h * dpr;
-            canvas.style.width = w + 'px';
-            canvas.style.height = h + 'px';
+            w = window.innerWidth; h = window.innerHeight;
+            canvas.width = w * dpr; canvas.height = h * dpr;
+            canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
             ctx.scale(dpr, dpr);
         }
-        window.addEventListener('resize', resize);
-        resize();
+        window.addEventListener('resize', resize); resize();
 
         let startTime = 0;
-
         function render(currentTime) {
             if (!startTime) startTime = currentTime;
-            
-            // 严格还原源码的时间与相位计算
             const elapsed = (currentTime - startTime) / 1000;
             const phase = (elapsed / animationDuration) * Math.PI * 2;
 
-            ctx.clearRect(0, 0, w, h);
-
-            // 1. 绘制文字作为“容器形状”
-            const fontSize = w < 768 ? w * 0.12 : w * 0.08;
-            ctx.font = `800 ${fontSize}px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            // 字体稍微收紧，符合原版的 tracking-tight
-            ctx.letterSpacing = '-2px'; 
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText("hi, i'm yanzisheng", w / 2, h / 2);
-
-            // 2. 锁定文字区域：背景填充为黑色
-            ctx.globalCompositeOperation = 'source-in';
-            ctx.fillStyle = '#050505'; // 极暗的背景，让蓝色波浪线凸显
+            ctx.fillStyle = '#050505'; 
             ctx.fillRect(0, 0, w, h);
-
-            // 3. 在文字内部叠加波浪形贝塞尔曲线
-            ctx.globalCompositeOperation = 'source-atop';
 
             const numLines = Math.floor(h / lineGap) + 10;
             for (let i = 0; i < numLines; i++) {
                 const y = i * lineGap;
-
-                // 核心正弦波动算法 (完全移植自 React 源码)
                 const curve1 = Math.sin(phase) * curveIntensity;
                 const curve2 = Math.sin(phase + 0.5) * curveIntensity * 0.6;
 
-                const colorIndex = i % colors.length;
-                ctx.strokeStyle = colors[colorIndex];
+                ctx.strokeStyle = colors[i % colors.length];
                 ctx.lineWidth = lineWidth;
-
                 ctx.beginPath();
                 ctx.moveTo(0, y);
-                ctx.bezierCurveTo(
-                    w * 0.33, y + curve1,
-                    w * 0.66, y + curve2,
-                    w, y
-                );
+                ctx.bezierCurveTo(w * 0.33, y + curve1, w * 0.66, y + curve2, w, y);
                 ctx.stroke();
             }
-
-            // 4. 重置混合模式，准备下一帧
-            ctx.globalCompositeOperation = 'source-over';
             requestAnimationFrame(render);
         }
-
-        // 启动动画循环
         requestAnimationFrame(render);
     </script>
 </body>
